@@ -330,6 +330,147 @@ python src/api/app_fastapi.py               # Run the server
 - **Interactive Form**: http://localhost:8080/home
 - **Health Check**: http://localhost:8080/health
 
+## 📦 Library Usage (For Data Science Teams)
+
+This package can be used as a Python library in your data science projects, Jupyter notebooks, or other Python applications without running the full API server.
+
+### Installation as Library
+
+```bash
+# Option 1: Install from Git (recommended for internal use)
+pip install git+https://github.com/ssmitty/production-api.git
+
+# Option 2: Clone and install locally
+git clone https://github.com/ssmitty/production-api.git
+cd production-api
+pip install -e .
+
+# Option 3: Install from PyPI (when published)
+pip install production-company-ticker-api
+```
+
+### Basic Library Usage
+
+```python
+# Import the main matching service
+from src.api.ticker_matcher import TickerMatcherService
+
+# Set up your database URL and API keys
+DATABASE_URL = "postgresql://user:password@host:port/database"
+ALPHA_VANTAGE_API_KEY = "your_alpha_vantage_key"
+OPENAI_API_KEY = "your_openai_key"  # Optional
+
+# Initialize the service
+matcher = TickerMatcherService(
+    database_url=DATABASE_URL,
+    alpha_vantage_api_key=ALPHA_VANTAGE_API_KEY,
+    openai_api_key=OPENAI_API_KEY  # Optional
+)
+
+# Match company names to tickers
+result = matcher.match_company("Apple Inc")
+print(f"Company: {result.matched_name}")
+print(f"Ticker: {result.predicted_ticker}")
+print(f"Confidence: {result.name_match_score}")
+```
+
+### Jupyter Notebook Usage
+
+```python
+import pandas as pd
+from src.api.ticker_matcher import TickerMatcherService
+
+# Initialize matcher
+matcher = TickerMatcherService(database_url=DATABASE_URL, alpha_vantage_api_key=API_KEY)
+
+# Process a DataFrame of company names
+companies_df = pd.DataFrame({
+    'company_name': ['Apple Inc', 'Microsoft Corporation', 'Google LLC']
+})
+
+# Add ticker matches
+def get_ticker(name):
+    result = matcher.match_company(name)
+    return result.predicted_ticker if result.predicted_ticker else None
+
+companies_df['ticker'] = companies_df['company_name'].apply(get_ticker)
+print(companies_df)
+```
+
+### Advanced Usage
+
+```python
+from src.core.services.company_matcher_service import CompanyMatcherService
+from src.database.repositories import TickerDataFrameLoaderService
+from src.core.services.openai_service import OpenAIService
+
+# For advanced usage, you can initialize individual services
+dataframe_loader = TickerDataFrameLoaderService(DATABASE_URL)
+openai_service = OpenAIService(OPENAI_API_KEY) if OPENAI_API_KEY else None
+
+# Initialize the matcher with custom settings
+matcher = CompanyMatcherService(
+    dataframe_loader=dataframe_loader,
+    openai_service=openai_service
+)
+
+# Get detailed matching results with confidence scores
+result = matcher.match_company("Apple Inc")
+print(f"Match method: {result.message}")
+print(f"Top matches: {result.top_matches}")
+print(f"API latency: {result.api_latency} seconds")
+```
+
+### Library Configuration
+
+Create a simple configuration file for your projects:
+
+```python
+# config.py
+import os
+
+class Config:
+    DATABASE_URL = os.environ.get('DATABASE_URL', 'your-default-db-url')
+    ALPHA_VANTAGE_API_KEY = os.environ.get('ALPHA_VANTAGE_API_KEY')
+    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+    
+    @classmethod
+    def validate(cls):
+        if not cls.DATABASE_URL:
+            raise ValueError("DATABASE_URL is required")
+        if not cls.ALPHA_VANTAGE_API_KEY:
+            raise ValueError("ALPHA_VANTAGE_API_KEY is required")
+
+# usage.py
+from config import Config
+from src.api.ticker_matcher import TickerMatcherService
+
+Config.validate()
+matcher = TickerMatcherService(
+    database_url=Config.DATABASE_URL,
+    alpha_vantage_api_key=Config.ALPHA_VANTAGE_API_KEY,
+    openai_api_key=Config.OPENAI_API_KEY
+)
+```
+
+### Error Handling in Library Usage
+
+```python
+from src.api.ticker_matcher import TickerMatcherService
+
+try:
+    matcher = TickerMatcherService(database_url=DATABASE_URL, alpha_vantage_api_key=API_KEY)
+    result = matcher.match_company("Some Company Name")
+    
+    if result.predicted_ticker:
+        print(f"Found ticker: {result.predicted_ticker}")
+    else:
+        print(f"No match found: {result.message}")
+        
+except Exception as e:
+    print(f"Error: {e}")
+```
+
 ## 📚 API Documentation
 
 ### Core Endpoints
