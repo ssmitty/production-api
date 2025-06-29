@@ -59,7 +59,7 @@ Input Company Name
 ## 📁 Project Structure
 
 ```
-production-api/
+public-company-api/
 
 ├── 📚 README.md                  # This file
 ├── ⚙️ requirements.txt           # Python dependencies
@@ -167,7 +167,7 @@ choco install python --version=3.11.9
 **Step 2: Create Virtual Environment**
 ```bash
 # Navigate to the project directory
-cd production-api
+cd public-company-api
 
 # Create virtual environment with Python 3.11.9
 python3.11 -m venv venv
@@ -338,11 +338,11 @@ This package can be used as a Python library in your data science projects, Jupy
 
 ```bash
 # Option 1: Install from Git (recommended for internal use)
-pip install git+https://github.com/ssmitty/production-api.git
+pip install git+https://github.com/ssmitty/public-company-api.git
 
 # Option 2: Clone and install locally
-git clone https://github.com/ssmitty/production-api.git
-cd production-api
+git clone https://github.com/ssmitty/public-company-api.git
+cd public-company-api
 pip install -e .
 
 # Option 3: Install from PyPI (when published)
