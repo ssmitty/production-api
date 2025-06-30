@@ -1,7 +1,8 @@
 """ETF detection utility using micro-services architecture."""
 
-import pandas as pd
 from typing import List, Optional
+
+import pandas as pd
 
 from src.utils.etf_detection import ETFKeywordCheckerService, FundTypeClassifierService
 
@@ -49,12 +50,11 @@ class ETFDetector:
         """Get the type of ETF if it is one using micro-services."""
         if not self.is_etf:
             return "not_etf"
-        elif self.is_leveraged:
+        if self.is_leveraged:
             return "leveraged_etf"
-        elif self.is_fund:
+        if self.is_fund:
             return "regular_etf"
-        else:
-            return "unknown_etf"
+        return "unknown_etf"
 
 
 def filter_etfs(company_names: List[str]) -> List[bool]:

@@ -32,6 +32,6 @@ def extract_company_and_ticker(text: str) -> tuple[str, str]:
         company_name = parts[0].strip()
         ticker = parts[1].replace(")", "").strip()
         return company_name, ticker
-    else:
-        # No ticker format, just company name
-        return text.strip(), None
+
+    # No ticker format, just company name
+    return text.strip(), None

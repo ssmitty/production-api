@@ -7,19 +7,22 @@ services:
     container_name: ticker-api-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: company_ticker_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      # PostgreSQL configuration from environment variables
+      - POSTGRES_DB=${POSTGRES_DB:-ticker_db}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ticker_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    env_file:
+      - .env.secrets
 
   # FastAPI Application
   api:
@@ -29,22 +32,28 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/company_ticker_db
+      # Database configuration from environment variables
+      - DATABASE_URL=${DATABASE_URL}
+      # API Keys from environment variables  
+      - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Server configuration
       - PORT=8000
       - HOST=0.0.0.0
-      - DEBUG=true
+      - DEBUG=${DEBUG:-false}
     env_file:
-      - ${ENV_FILE:-.env.secrets}
+      - .env.secrets
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
       # Only mount source code in development
       - ./src:/app/src:ro
+      - ./logs:/app/logs
     networks:
       - ticker-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/detailed"]
       interval: 30s
       timeout: 10s
       retries: 3

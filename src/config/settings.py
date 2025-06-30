@@ -7,7 +7,7 @@ class Settings:
     """Simple application settings - only what's actually used."""
 
     # API Configuration - Only thing actually used by FastAPI
-    APP_VERSION: str = "1.2.0"
+    APP_VERSION: str = "1.3.0"
 
     # Static configurations that don't need environment loading
     ALPHA_VANTAGE_BASE_URL: str = "https://www.alphavantage.co"

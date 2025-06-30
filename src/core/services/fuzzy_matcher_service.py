@@ -1,7 +1,9 @@
 """Service for orchestrating fuzzy matching with vector scoring."""
 
-import pandas as pd
 from typing import Tuple, Optional
+
+import pandas as pd
+
 from src.core.services.matchers.vectorizer_setup_service import VectorizerSetupService
 from src.core.services.matchers.fuzzy_match_finder_service import (
     FuzzyMatchFinderService,
@@ -52,7 +54,8 @@ class FuzzyMatcherService:
 
         Returns:
             Tuple with match results
-            Format: (matched_name, predicted_ticker, all_possible_tickers, score, message, top_matches)
+            Format: (matched_name, predicted_ticker, all_possible_tickers, 
+                    score, message, top_matches)
         """
         # Setup vectorization if not already done or dataframe changed
         current_df_id = id(tickers_df)

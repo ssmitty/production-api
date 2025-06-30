@@ -1,7 +1,7 @@
 """Service for processing ticker data using composition of micro-services."""
 
 from typing import List, Optional
-import pandas as pd
+
 from src.models.ticker import TickerData
 from src.core.services.data_processing.raw_data_processor_service import (
     RawDataProcessorService,

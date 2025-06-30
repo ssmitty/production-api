@@ -1,10 +1,12 @@
 """Service for fetching raw data from external APIs."""
 
-import logging
-import requests
 import io
-import pandas as pd
+import logging
 from typing import Optional
+
+import pandas as pd
+import requests
+
 from src.config.settings import settings
 
 
@@ -69,9 +71,12 @@ class RawDataFetcherService:
         """
         try:
             # Test with a simple API call
-            test_url = f"{self.base_url}/query?function=TIME_SERIES_INTRADAY&symbol=AAPL&interval=1min&apikey={self.api_key}"
+            test_url = (
+                f"{self.base_url}/query?function=TIME_SERIES_INTRADAY&"
+                f"symbol=AAPL&interval=1min&apikey={self.api_key}"
+            )
             response = requests.get(test_url, timeout=10)
             return response.status_code == 200
-        except Exception as e:
+        except (requests.exceptions.RequestException, ValueError) as e:
             logging.error("Alpha Vantage API health check failed: %s", e)
             return False

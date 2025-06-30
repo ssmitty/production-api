@@ -33,7 +33,7 @@ class MatchResultPreparerService:
 
         # If the best match has a perfect score (100), only return that single match
         is_perfect_match = best_candidate["combined_score"] >= 100.0
-        
+
         max_candidates = 1 if is_perfect_match else len(candidates_with_scores)
 
         for i, candidate in enumerate(candidates_with_scores[:max_candidates]):
@@ -59,9 +59,12 @@ class MatchResultPreparerService:
                         "name_match_score": candidate["combined_score"],
                     }
                 )
-        
+
         if is_perfect_match:
-            logging.info("🎯 Perfect match found (score=%.1f), returning single result only", best_candidate["combined_score"])
+            logging.info(
+                "Perfect match found (score=%.1f), returning single result only",
+                best_candidate["combined_score"],
+            )
 
         # Remove duplicates while preserving order
         all_possible_tickers = list(dict.fromkeys(all_possible_tickers))

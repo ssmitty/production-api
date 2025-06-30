@@ -1,8 +1,9 @@
 """Abstract interface for company matching strategies."""
 
 from abc import ABC, abstractmethod
+from typing import Optional, Tuple, Dict, Any
+
 import pandas as pd
-from typing import List, Optional, Tuple, Dict, Any
 
 
 class MatchingStrategy(ABC):

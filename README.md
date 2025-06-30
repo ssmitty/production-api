@@ -1,31 +1,41 @@
-# 🎯 Company Ticker Matching API
+# Company Ticker Matching API
 
 A production-ready FastAPI service for matching company names to stock ticker symbols using advanced machine learning techniques including exact matching, fuzzy matching, and OpenAI-powered fallback matching.
 
-## 🚀 Live Demo
+## Live Demo
 
-**🌐 Deployed API**: [http://production.eba-majswwkn.us-east-1.elasticbeanstalk.com/docs](http://production.eba-majswwkn.us-east-1.elasticbeanstalk.com/docs)
+**Deployed API**: [http://production.eba-majswwkn.us-east-1.elasticbeanstalk.com/docs](http://production.eba-majswwkn.us-east-1.elasticbeanstalk.com/docs)
 
 - **Interactive API Docs**: `/docs`
-- **Web Form Interface**: `/home` 
-- **Health Check**: `/health`
 
-## ✨ Features
+## Features
 
-- **🎯 Smart Matching**: Multi-strategy matching (exact → fuzzy → AI fallback)
-- **⚡ High Performance**: Sub-second response times with caching
-- **🤖 AI Integration**: OpenAI GPT fallback for complex company names
-- **📊 REST API**: JSON and form-based endpoints
-- **🔄 Live Data**: Real-time ticker updates from Alpha Vantage
-- **💾 PostgreSQL**: Persistent storage with metadata tracking
+- **Smart Matching**: Multi-strategy matching (exact → fuzzy → AI fallback)
+- **High Performance**: Sub-second response times with caching
+- **AI Integration**: OpenAI GPT fallback for complex company names
+- **REST API**: JSON and form-based endpoints
+- **Live Data**: Real-time ticker updates from Alpha Vantage
+- **PostgreSQL**: Persistent storage with metadata tracking
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 Input Company Name → Text Preprocessing → Exact Match → Fuzzy Match → AI Fallback → Result
 ```
 
-## ⚡ Quick Start
+## Database Choice: PostgreSQL
+
+PostgreSQL was selected as the primary database for several key reasons:
+
+- **Cost Effectiveness**: Significantly lower operational costs compared to proprietary databases like Oracle or SQL Server
+- **Easy Setup**: Simple installation and configuration process with excellent Docker support
+- **Production Ready**: Battle-tested reliability with ACID compliance and robust transaction handling
+- **Scalability**: Handles large datasets efficiently with advanced indexing and query optimization
+- **JSON Support**: Native JSON data types for flexible schema evolution without migration overhead
+- **Rich Ecosystem**: Extensive tooling, monitoring solutions, and cloud provider support (AWS RDS, Google Cloud SQL)
+- **Open Source**: No licensing fees and active community development ensuring long-term viability
+
+## Quick Start
 
 ### Prerequisites
 - Python 3.11+ (recommended)
@@ -61,9 +71,6 @@ OPENAI_API_KEY=your_openai_key  # Optional
 ### Run
 
 ```bash
-# Activate environment
-source venv/bin/activate
-
 # Load environment variables
 set -a && source .env.secrets && set +a
 
@@ -73,74 +80,15 @@ python src/api/app_fastapi.py
 
 Access at: http://localhost:8080/docs
 
-## 📦 Library Usage
+## API Reference
 
-Use as a Python library in your data science projects:
-
-```python
-# Install
-pip install git+https://github.com/ssmitty/public-company-api.git
-
-# Use in code
-from src.api.ticker_matcher import TickerMatcherService
-
-matcher = TickerMatcherService(
-    database_url=DATABASE_URL,
-    alpha_vantage_api_key=API_KEY,
-    openai_api_key=OPENAI_KEY  # Optional
-)
-
-# Match company to ticker
-result = matcher.match_company("Apple Inc")
-print(f"Ticker: {result.predicted_ticker}")  # AAPL
-```
-
-### Jupyter Notebook Example
-
-```python
-import pandas as pd
-
-companies_df = pd.DataFrame({
-    'company_name': ['Apple Inc', 'Microsoft Corporation', 'Google LLC']
-})
-
-# Add tickers
-companies_df['ticker'] = companies_df['company_name'].apply(
-    lambda name: matcher.match_company(name).predicted_ticker
-)
-```
-
-## 📚 API Reference
-
-### Match Company Name
-```http
-POST /api/match
-Content-Type: application/json
-
-{
-  "company_name": "Apple Inc"
-}
-```
-
-**Response:**
-```json
-{
-  "input_name": "Apple Inc",
-  "matched_name": "Apple Inc", 
-  "predicted_ticker": "AAPL",
-  "name_match_score": 0.95,
-  "message": "Exact match found",
-  "api_latency": 0.123
-}
-```
-
-### Other Endpoints
+### Available Endpoints
 - **`GET /update-tickers`** - Refresh ticker data from Alpha Vantage
 - **`GET /latest-tickers`** - Get last update timestamp
-- **`GET /health`** - Health check
-- **`GET /home`** - Web form interface
+- **`GET /health/detailed`** - Detailed health check
+- **`POST /match`** - Form-based company matching
 
-## 🛠️ Development
+## Development
 
 ```bash
 # Run tests
@@ -153,7 +101,7 @@ black src/
 mypy src/
 ```
 
-## 🐳 Deployment
+## Deployment
 
 ### Docker
 ```bash
@@ -167,7 +115,7 @@ docker run -p 8080:8080 --env-file .env.secrets ticker-api
 - Deploy to cloud platform (AWS, GCP, Azure)
 - Configure reverse proxy for production
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 public-company-api/
@@ -182,27 +130,13 @@ public-company-api/
 └── README.md              # This file
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | ✅ | PostgreSQL connection string |
-| `ALPHA_VANTAGE_API_KEY` | ✅ | Alpha Vantage API key |
-| `OPENAI_API_KEY` | ❌ | OpenAI API key (optional) |
-| `PORT` | ❌ | Server port (default: 8000) |
+| `DATABASE_URL` | Required | PostgreSQL connection string |
+| `ALPHA_VANTAGE_API_KEY` | Required | Alpha Vantage API key |
+| `OPENAI_API_KEY` | Optional | OpenAI API key (optional) |
+| `PORT` | Optional | Server port (default: 8000) |
 
-## 🤝 Contributing
-
-1. Fork repository
-2. Create feature branch
-3. Follow coding standards (SRP, type hints)
-4. Add tests
-5. Submit pull request
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
----
-
-**🚀 Built with FastAPI • Deployed on AWS • Ready for production** 
+**Built with FastAPI • Deployed on AWS • Ready for production** 

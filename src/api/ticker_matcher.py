@@ -3,7 +3,7 @@ Consolidated TickerMatcher library for engineering teams.
 
 Simple usage:
     from ticker_matcher import TickerMatcher
-    
+
     matcher = TickerMatcher(api_key="your_openai_key", database_url="your_db_url")
     result = matcher.match("Apple Inc")
     print(result)  # Returns clean dictionary
@@ -11,10 +11,10 @@ Simple usage:
 
 import logging
 import time
-import os
-import pandas as pd
-from typing import Optional, Dict, Any, List, Tuple
 from dataclasses import asdict
+from typing import Optional, Dict, Any, List
+
+import pandas as pd
 
 # Import models
 from src.models.ticker import MatchResult
@@ -28,6 +28,7 @@ from src.core.services.matching import (
     DataPreparationService,
     StrategyOrchestratorService,
 )
+from src.config.settings import settings
 
 
 class TickerMatcher:
@@ -138,12 +139,13 @@ class TickerMatcher:
             result_dict["success"] = True
 
             self.logger.info(
-                f"Successfully matched '{company_name}' to '{result[1]}' in {api_latency:.3f}s"
+                "Successfully matched '%s' to '%s' in %.3fs",
+                company_name, result[1], api_latency
             )
             return result_dict
 
-        except Exception as e:
-            self.logger.error(f"Error matching company '{company_name}': {str(e)}")
+        except (ValueError, KeyError, AttributeError, RuntimeError) as e:
+            self.logger.error("Error matching company '%s': %s", company_name, str(e))
             return self._error_response(f"Internal error: {str(e)}", start_time)
 
     def batch_match(
@@ -192,7 +194,8 @@ class TickerMatcher:
                     "status": "healthy" if not tickers_df.empty else "warning",
                     "records_count": len(tickers_df) if not tickers_df.empty else 0,
                 }
-            except Exception as e:
+            except (ValueError, KeyError, AttributeError, RuntimeError,
+                    ConnectionError, TimeoutError) as e:
                 health_status["checks"]["database"] = {
                     "status": "unhealthy",
                     "error": str(e),
@@ -213,7 +216,8 @@ class TickerMatcher:
                 "strategy_orchestrator": "initialized",
             }
 
-        except Exception as e:
+        except (ValueError, KeyError, AttributeError, RuntimeError,
+                ConnectionError, TimeoutError) as e:
             health_status["status"] = "unhealthy"
             health_status["error"] = str(e)
 
@@ -282,8 +286,9 @@ class TickerMatcher:
                 openai_service=self.openai_service,
             )
 
-        except Exception as e:
-            self.logger.error(f"Failed to initialize services: {str(e)}")
+        except (ValueError, KeyError, AttributeError, RuntimeError,
+                ImportError, ModuleNotFoundError) as e:
+            self.logger.error("Failed to initialize services: %s", str(e))
             raise
 
     def _get_ticker_data(self, use_cache: bool = True) -> pd.DataFrame:
@@ -311,11 +316,10 @@ class TickerMatcher:
         else:
             # Fallback: try to create temporary loader from settings
             try:
-                from src.config.settings import settings
-
                 temp_loader = TickerDataFrameLoaderService(settings.DATABASE_URL)
                 tickers_df = temp_loader.load_tickers_dataframe()
-            except Exception:
+            except (ValueError, KeyError, AttributeError, RuntimeError,
+                    ConnectionError, ImportError, ModuleNotFoundError):
                 self.logger.error(
                     "Cannot load ticker data: no database connection available"
                 )

@@ -50,8 +50,10 @@ class ExactMatchFinderService:
                 "name_match_score": 100.0,
             }
         )
-        
-        logging.info("🎯 Exact match found for '%s', returning single result only", company_name)
+
+        logging.info(
+            "Exact match found for '%s', returning single result only", company_name
+        )
 
         # Return appropriate response based on ticker availability
         if not exact_tickers:

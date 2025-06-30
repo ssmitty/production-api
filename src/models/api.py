@@ -1,13 +1,21 @@
 """Pydantic models for FastAPI request/response schemas."""
 
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
 class CompanyMatchRequest(BaseModel):
     """Request model for company matching."""
 
-    company_name: str = Field(..., description="Company name to match", min_length=1)
+    name: str = Field(..., description="Company name to match", min_length=1)
+
+
+class ErrorResponse(BaseModel):
+    """Error response model."""
+
+    error: str = Field(..., description="Error message")
+    detail: Optional[str] = Field(None, description="Detailed error information")
+    version: str = Field(..., description="API version")
 
 
 class TopMatch(BaseModel):
@@ -69,11 +77,3 @@ class HealthCheckResponse(BaseModel):
     openai_service: str = Field(..., description="OpenAI service availability")
     version: str = Field(..., description="API version")
     error: Optional[str] = Field(None, description="Error details if any")
-
-
-class ErrorResponse(BaseModel):
-    """Response model for errors."""
-
-    error: str = Field(..., description="Error message")
-    detail: Optional[str] = Field(None, description="Detailed error information")
-    version: Optional[str] = Field(None, description="API version")
