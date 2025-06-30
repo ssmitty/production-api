@@ -97,3 +97,7 @@ sentencepiece/
 train_*.py
 generate_*.py
 testenv/ 
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

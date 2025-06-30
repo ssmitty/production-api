@@ -390,6 +390,35 @@ async def list_timezones():
 async def health_check():
     """
     Health Check Endpoint
+    Basic health check for load balancer - just confirms app is running.
+    """
+    try:
+        # Basic health check for EB load balancer - always return healthy if app is running
+        return HealthCheckResponse(
+            status="healthy",
+            database="not_checked",  # Don't check DB for basic health check
+            openai_service="not_checked",  # Don't check OpenAI for basic health check
+            version=settings.APP_VERSION,
+        )
+
+    except Exception as e:
+        logger.exception("Health check error: %s", e)
+        raise HTTPException(
+            status_code=503,
+            detail=HealthCheckResponse(
+                status="unhealthy",
+                database="error",
+                openai_service="error",
+                version=settings.APP_VERSION,
+                error=str(e),
+            ).dict(),
+        )
+
+
+@app.get("/health/detailed", response_model=HealthCheckResponse)
+async def detailed_health_check():
+    """
+    Detailed Health Check Endpoint
     Check the health of the application and its dependencies.
     """
     try:
@@ -420,7 +449,7 @@ async def health_check():
     except HTTPException:
         raise
     except Exception as e:
-        logger.exception("Health check error: %s", e)
+        logger.exception("Detailed health check error: %s", e)
         raise HTTPException(
             status_code=503,
             detail=HealthCheckResponse(
