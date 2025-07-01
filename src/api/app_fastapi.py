@@ -107,7 +107,117 @@ ticker_updater = TickerUpdaterService(api_key=ALPHA_VANTAGE_API_KEY)
 logger.info("SUCCESS: All services initialized successfully")
 
 
+# Import for HTML responses
+from fastapi.responses import HTMLResponse
 
+@app.get("/", response_class=HTMLResponse)
+async def root():
+    """
+    Root endpoint - Landing page for the Company Ticker Matching API
+    """
+    html_content = """
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>Company Ticker Matching API</title>
+            <style>
+                body { 
+                    font-family: 'Segoe UI', Arial, sans-serif; 
+                    max-width: 800px; 
+                    margin: 50px auto; 
+                    padding: 20px; 
+                    background-color: #f5f5f5;
+                }
+                .container { 
+                    background: white; 
+                    padding: 40px; 
+                    border-radius: 10px; 
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
+                h1 { color: #2c3e50; margin-bottom: 30px; }
+                h2 { color: #34495e; margin-top: 30px; }
+                .endpoint { 
+                    background: #ecf0f1; 
+                    padding: 15px; 
+                    margin: 10px 0; 
+                    border-radius: 5px;
+                    border-left: 4px solid #3498db;
+                }
+                .method { 
+                    color: white; 
+                    padding: 3px 8px; 
+                    border-radius: 3px; 
+                    font-size: 12px; 
+                    font-weight: bold;
+                    margin-right: 10px;
+                }
+                .get { background-color: #27ae60; }
+                .post { background-color: #e74c3c; }
+                a { color: #3498db; text-decoration: none; }
+                a:hover { text-decoration: underline; }
+                .documentation { 
+                    background: #e8f5e8; 
+                    padding: 20px; 
+                    border-radius: 5px; 
+                    margin: 20px 0;
+                    border-left: 4px solid #27ae60;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>🏢 Company Ticker Matching API</h1>
+                <p>Welcome to the Company Ticker Matching API! This service helps you match company names to their stock ticker symbols.</p>
+                
+                <div class="documentation">
+                    <h3>📚 API Documentation</h3>
+                    <p>Explore the interactive API documentation:</p>
+                    <ul>
+                        <li><a href="/docs" target="_blank"><strong>Swagger UI</strong></a> - Interactive API explorer</li>
+                        <li><a href="/redoc" target="_blank"><strong>ReDoc</strong></a> - Clean API documentation</li>
+                    </ul>
+                </div>
+
+                <h2>🔗 Available Endpoints</h2>
+                
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <strong>/match</strong> - Match a company name to stock ticker
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <strong>/update-tickers</strong> - Update ticker data from Alpha Vantage
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <strong>/latest-tickers</strong> - Get last update timestamp
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <strong>/timezones</strong> - List available timezones
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <strong>/health/detailed</strong> - Detailed health check
+                </div>
+
+                <h2>🚀 Quick Start</h2>
+                <p>Try the API by visiting <a href="/docs">/docs</a> for an interactive interface, or make a POST request to <code>/match</code> with a company name.</p>
+                
+                <p style="margin-top: 30px; color: #7f8c8d; font-size: 14px;">
+                    API Version: {version} | 
+                    <a href="https://github.com/yourusername/public-company-api-2" target="_blank">GitHub Repository</a>
+                </p>
+            </div>
+        </body>
+    </html>
+    """.format(version=settings.APP_VERSION)
+    
+    return HTMLResponse(content=html_content)
 
 
 @app.post("/match", response_model=CompanyMatchResponse)

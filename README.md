@@ -88,18 +88,34 @@ Access at: http://localhost:8080/docs
 - **`GET /health/detailed`** - Detailed health check
 - **`POST /match`** - Form-based company matching
 
-## Development
+## Library/SDK Usage for Engineering Teams
 
-```bash
-# Run tests
-python -m pytest src/tests/
+For engineering teams who want to integrate ticker matching functionality directly into their applications, we provide a simplified library interface:
 
-# Code formatting
-black src/
+### TickerMatcher Library
 
-# Type checking  
-mypy src/
-```
+**File**: src/examples/ticker_matcher.py
+
+This is a high-level wrapper around our core services that provides:
+- **Simple API**: Single class interface for all matching functionality
+- **Dependency Injection**: No environment variable dependencies
+- **Batch Processing**: Match multiple companies at once
+- **Error Handling**: Graceful error responses with detailed logging
+- **Health Checks**: Built-in system health monitoring
+
+
+### Example usage
+
+See `src/examples/library_usage_example.py` for a comprehensive demonstration showing:
+- Single and batch matching
+- Error handling patterns
+- Health monitoring
+- Performance statistics
+
+**Note**: The main FastAPI application (`app_fastapi.py`) uses the underlying services directly and does not depend on this library wrapper.
+
+
+
 
 ## Deployment
 

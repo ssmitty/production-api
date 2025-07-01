@@ -67,9 +67,15 @@ docs/_build/
 *.md
 
 # Testing
+src/tests/
+tests/
+**/test_*.py
+**/*_test.py
 .pytest_cache/
 .coverage
 htmlcov/
+pytest.ini
+conftest.py
 
 # Elastic Beanstalk
 .elasticbeanstalk/

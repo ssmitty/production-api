@@ -92,6 +92,7 @@ ehthumbs.db
 !.elasticbeanstalk/*.global.yml
 
 # Development/Training artifacts (remove if not needed)
+development/
 company-spell-corrector/
 sentencepiece/
 train_*.py
