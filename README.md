@@ -112,6 +112,8 @@ See `src/examples/library_usage_example.py` for a comprehensive demonstration sh
 - Health monitoring
 - Performance statistics
 
+command to run: set -a && source .env.secrets && set +a && python src/examples/ticker_matcher.py
+
 **Note**: The main FastAPI application (`app_fastapi.py`) uses the underlying services directly and does not depend on this library wrapper.
 
 

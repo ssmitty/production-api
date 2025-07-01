@@ -9,6 +9,14 @@ Simple usage:
     print(result)  # Returns clean dictionary
 """
 
+import os
+import sys
+
+# Add project root to Python path for proper imports
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 import logging
 import time
 from dataclasses import asdict
@@ -353,3 +361,83 @@ class TickerMatcher:
             "api_latency": time.time() - start_time,
             "success": False,
         }
+
+
+if __name__ == "__main__":
+    """
+    Example usage of the TickerMatcher library.
+    
+    This demonstrates how engineering teams can use the TickerMatcher 
+    as a standalone library in their projects.
+    """
+    import os
+    
+    # Get database URL from environment (required)
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        print("❌ ERROR: DATABASE_URL environment variable is required")
+        print("Please set your DATABASE_URL and try again:")
+        print("export DATABASE_URL='postgresql://username:password@host:port/database'")
+        sys.exit(1)
+    
+    # Get OpenAI API key (optional)
+    openai_api_key = os.environ.get("OPENAI_API_KEY")
+    
+    try:
+        print("🔄 Initializing TickerMatcher library...")
+        
+        # Initialize the TickerMatcher
+        matcher = TickerMatcher(
+            database_url=database_url,
+            api_key=openai_api_key,
+            log_level="INFO"
+        )
+        
+        print("✅ TickerMatcher initialized successfully!")
+        print()
+        
+        # Perform health check
+        print("🔄 Performing health check...")
+        health = matcher.health_check()
+        print(f"Health Status: {health['status']}")
+        print(f"Database: {health['checks']['database']['status']}")
+        if health['checks']['database']['status'] == 'healthy':
+            print(f"Records Count: {health['checks']['database']['records_count']}")
+        print()
+        
+        # Example company matches
+        test_companies = [
+            "Apple Inc",
+            "Microsoft Corporation", 
+            "Tesla",
+            "Google",
+            "Amazon"
+        ]
+        
+        print("🔄 Running example matches...")
+        print("-" * 50)
+        
+        for company in test_companies:
+            print(f"Matching: {company}")
+            result = matcher.match(company)
+            
+            if result['success']:
+                print(f"✅ Result: {result['predicted_ticker']} ({result['matched_name']})")
+                print(f"   Score: {result['name_match_score']:.1f}%")
+                print(f"   Latency: {result['api_latency']:.3f}s")
+            else:
+                print(f"❌ Failed: {result['message']}")
+            print()
+        
+        # Show statistics
+        print("📊 Matcher Statistics:")
+        stats = matcher.get_stats()
+        print(f"Cache Enabled: {stats['cache_enabled']}")
+        print(f"OpenAI Configured: {stats['openai_configured']}")
+        print(f"Database Configured: {stats['database_configured']}")
+        
+        print("\n✅ Example completed successfully!")
+        
+    except Exception as e:
+        print(f"❌ Error running example: {e}")
+        sys.exit(1)
